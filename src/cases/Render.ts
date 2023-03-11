@@ -15,7 +15,7 @@ const obj = {
 }
 
 
-function Render(obj: { tag: any; children: string | any[] }, root: { appendChild: (arg0: any) => void }) {
+export function Render(obj: { tag: any; children: string | any[] }, root: { appendChild: (arg0: any) => void }) {
     const el = document.createElement(obj.tag)
     if (typeof obj.children === 'string') {
         const text = document.createTextNode(obj.children)

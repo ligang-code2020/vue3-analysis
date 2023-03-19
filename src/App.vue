@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import {Render} from './cases/Render';
+import { renderer } from './cases/Render/Render'
 
-const obj = {
+
+
+const vnode = {
   tag: 'div',
-  children: [
-    {
-      tag: 'span',
-      children: 'Hello World!'
-    }
-  ]
+  props: {
+    onclick: () => alert('hello')
+  },
+  children: 'click me'
 }
-
+renderer(vnode, document.body)
 const count = ref<number>(0)
 
 console.log(count);
@@ -27,9 +27,6 @@ console.log(count);
   <div>
 
   </div>
-
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

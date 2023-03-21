@@ -21,7 +21,7 @@ export function Render(obj: { tag: any; children: string | any[] }, root: { appe
         const text = document.createTextNode(obj.children)
         el.appendChild(text)
     } else if (obj.children) {
-        // 数组，递归调用 Render，使用 el 作为 root 参数
+        // 数组，递归调用 渲染器，使用 el 作为 root 参数
         obj.children.forEach((child) => {
             Render(child, el)
         })
@@ -32,8 +32,6 @@ export function Render(obj: { tag: any; children: string | any[] }, root: { appe
 }
 
 
-
-
 /**
  * 编写一个渲染器，把上面这段虚拟 DOM 渲染为真实 DOM
  * tag用来描述标签名称，所以tag: 'div'描述的就是一个<div>标签。
@@ -41,15 +39,7 @@ export function Render(obj: { tag: any; children: string | any[] }, root: { appe
  * children用来描述标签的子节点。在上面的代码中，children是一个字符串值，意思是div标签有一个文本子节点：<div>click me</div>
  */
 
-const vnode = {
-    tag: 'div',
-    props: {
-        onclick: () => alert('hello')
-    },
-    children: 'click me'
-}
-
-export function renderer(vnode, container) {
+function mountElement(vnode, container) {
     // 使用 vnode.tag 作为标签名称创建 DOM 元素
     const el = document.createElement(vnode.tag)
 
@@ -74,4 +64,24 @@ export function renderer(vnode, container) {
     // 将元素添加到挂载节点
     container.appendChild(el)
 
+}
+
+
+function mountComponent(vnode, container) {
+    // 调用组件函数，获取组件要渲染的内容（虚拟 DOM）
+    const subtree = vnode.tag.render();
+
+    // 递归调用 renderer 函数渲染 subtree
+    renderer(subtree, container)
+}
+
+
+function renderer(vnode, container) {
+    if (typeof vnode.tag === 'string') {
+        // 说明 vnode 是描述的标签元素
+        mountElement(vnode, container)
+    } else if (typeof vnode.tag === 'object') {
+        // 说明 vnode 描述的是组件
+        mountComponent(vnode, container)
+    }
 }

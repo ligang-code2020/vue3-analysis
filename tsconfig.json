@@ -22,7 +22,11 @@
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue"
-, "src/cases/Tree-Shaking/input.js", "src/cases/Tree-Shaking/utils.js", "src/cases/Tree-Shaking/utils.js"  ],
+,
+    "src/knowledge/Tree-Shaking/input.js",
+    "src/knowledge/Tree-Shaking/utils.js",
+    "src/knowledge/Tree-Shaking/utils.js"
+  ],
   "exclude": [
     "node_modules"
   ],

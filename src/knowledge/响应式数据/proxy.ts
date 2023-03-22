@@ -17,6 +17,7 @@ const obj = new Proxy(data, {
         // 设置属性值
         target[p] = newValue;
         // 把副作用函数从桶子里面拿出并且执行
+        // @ts-ignore
         bucket.forEach(fn => fn())
         // 返回 true 代表设置操作成功
         return true;
@@ -26,7 +27,7 @@ const obj = new Proxy(data, {
 /**
  * 副作用函数 effect
  */
-export function effect() {
+function effect() {
     document.body.innerText = obj.text;
 }
 

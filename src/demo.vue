@@ -1,22 +1,19 @@
 <template>
-    <h3>{{ foo }}*{{ bar }}</h3>
+    <input type="text" id="my-input" value="foo"/>
 </template>
 
 <script>
-import {ref, reactive, toRefs, computed} from 'vue';
+import {ref, reactive, toRefs, computed, onMounted, effect} from 'vue';
+
 
 export default {
     name: "demo.vue",
     setup() {
-        const obj = reactive({foo: 1, bar: 2})
+        onMounted(() => {
+            const el = document.querySelector('#my-input')
+            console.log(el)
+        })
 
-
-        obj.foo = 1000
-
-        return {
-
-            ...toRefs(obj)
-        }
     }
 }
 </script>

@@ -95,11 +95,21 @@ function trigger(target, key) {
   if (!depsMap) return;
   // 根据 key 取得所有副作用函数 effects
   const effects = depsMap.get(key);
+  // 取得 ITERATE_KEY 相关联的副作用函数
+  const iterateEffects = depsMap.get(key); // ITERATE_KEY
+
   const effectsToRun = new Set();
   // 执行副作用函数
   effects &&
     effects.forEach((effectFn) => {
       // 如果 trigger 触发执行的副作用函数与当前正在执行的副作用函数相同，则不执行
+      if (effectFn !== activeEffect) {
+        effectsToRun.add(effectFn);
+      }
+    });
+  // 将与 ITERATE_KEY 相关联的副作用函数也添加到 effectsToRun
+  iterateEffects &&
+    iterateEffects.forEach((effectFn) => {
       if (effectFn !== activeEffect) {
         effectsToRun.add(effectFn);
       }
@@ -115,4 +125,5 @@ function trigger(target, key) {
     }
   });
 }
+
 

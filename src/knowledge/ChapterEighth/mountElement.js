@@ -56,7 +56,21 @@ function createRenderer(options) {
 
   function patch(n1, n2, container) {}
 
-  function render(vnode) {}
+  function render(vnode, container) {
+    if (vnode) {
+      patch(container._vnode, vnode, container);
+    } else {
+      if (container._vnode) {
+        // 根据 vnode 获取要卸载的真实 DOM 元素
+        const el = container._vnode.el;
+        // 获取 el 的父元素
+        const parent = el.parentNode;
+        // 调用 removeChild 移除元素
+        if (parent) parent.removeChild(el);
+      }
+    }
+    container._vnode = vnode;
+  }
 
   return {
     render,

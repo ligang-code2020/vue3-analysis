@@ -1,19 +1,37 @@
 <template>
-    <div id="test"></div>
+    <div id="test">1</div>
 </template>
 
 <script  setup>
-import { computed, ref, watch, onMounted, reactive } from 'vue';
-// import { renderer } from "./knowledge/ChapterSeven/renderer";
-import { renderer } from "./knowledge/ChapterSeven/customRender"
+import { computed, ref, watch, onMounted, reactive, render, createVNode,h} from 'vue';
+const bol = ref(false)
+// 创建 vnode
 const vnode = {
-    type: 'h1',
-    children: 'hello'
+    type: 'div',
+    props: bol.value ? {
+        onClick: () => {
+            alert('父元素 clicked')
+        }
+    } : {},
+    children: [
+        {
+            type: 'p',
+            props: {
+                onClick: () => {
+                    bol.value = true
+                }
+            },
+            children: 'text'
+        }
+    ]
 }
-const container = { type: 'root' }
-renderer.render(vnode, container)
+
+
+
 onMounted(() => {
-    renderer.render(vnode, container)
+    // 渲染 vnode
+    // render(vnode, document.querySelector('#test'))
+    h(vnode)
 })
 
 </script>

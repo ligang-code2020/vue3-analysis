@@ -14,7 +14,8 @@ const renderer = createRenderer({
   // 用于再给定的 parent 下添加指定元素
   insert(el, parent, anchor = null) {
     console.log(`将 ${JSON.stringify(el)} 添加到 ${JSON.stringify(parent)} 下`);
-    parent.children = el;
+    // parent.children = el;
+    parent.insertBefore(el, anchor)
     // parent.insertBefore(el, anchor);
   },
 });

@@ -32,6 +32,10 @@ function mountComponent(vnode, container, anchor) {
     isMounted: false,
     // 组件所渲染的内容，即子树（subTree）
     subTree: null,
+    // 插槽内容
+    slots,
+    // 在组件实例中添加 mounted 数组，用来存储通过 onMounted 函数注册的生命周期钩子函数
+    mounted: [],
   };
 
   // 定义 emit 函数，它接收两个参数
@@ -50,12 +54,26 @@ function mountComponent(vnode, container, anchor) {
     }
   }
 
+  function onMounted(fn) {
+    if (currentInstance) {
+      // 将生命周期函数添加到 instance.mounted 数组中
+      currentInstance.mounted.push(fn);
+    } else {
+      console.error('onMounted 函数只能在 setup 中调用');
+    }
+  }
+  const slots = vnode.children || {};
+
   // 将 emit 函数添加到 setupContext 中，用户可以通过 setupContext 取得 emit 函数
   // setupContext
-  const setupContext = { attrs, emit };
-  // 调用 setup 函数，将只读版本的 props 作为第一个参数传递，避免用户意外地修改 props 的值
-  // 将 setupContext 作为第二个参数传递
+  const setupContext = { attrs, emit, slots };
+  // 在调用 setup 函数之前，设置当前组件实例
+  setCurrentInstance(instance);
+  // 执行 setup 函数
   const setupResult = setup(shallowReadonly(instance.props), setupContext);
+  // 在 setup 函数执行完毕以后，重置当前组件实例
+  setCurrentInstance(null);
+
   // setupState 用来存储由 setup 返回的数据
   let setupState = null;
   // 如果 setup 函数的返回值是函数，则将其作为渲染函数
@@ -76,7 +94,9 @@ function mountComponent(vnode, container, anchor) {
   const renderContext = new Proxy(instance, {
     get(t, k, r) {
       // 取得组件自身状态与 props 数据
-      const { state, props } = t;
+      const { state, props, slots } = t;
+      // 当 k 的值为 $slot 时，直接返回组件实例上的 slots
+      if (k === '$slot') return slots;
       // 先尝试读取自身状态数据
       if (state && k in state) {
         return state[k];
@@ -120,6 +140,9 @@ function mountComponent(vnode, container, anchor) {
         instance.isMounted = true;
         // 4. 这里调用 mounted 钩子
         mounted && mounted.call(state);
+        // 遍历 instance.mounted 数组并逐个执行
+        instance.mounted &&
+          instance.mounted.forEach((hook) => hook.call(renderContext));
       } else {
         // 5. 在这里调用 beforeUpdate 钩子
         beforeUpdate && beforeUpdate.call(state);
@@ -197,4 +220,12 @@ function hasPropsChanged(prevProps, nextProps) {
     if (nextProps[key] !== prevProps[key]) return true;
   }
   return false;
+}
+
+// 全局变量，存储当前正在被初始化的组件实例
+let currentInstance = null;
+
+// 该方法接收组件实例作为参数，并将该实例设置为 currentInstance
+function setCurrentInstance(instance) {
+  currentInstance = instance;
 }

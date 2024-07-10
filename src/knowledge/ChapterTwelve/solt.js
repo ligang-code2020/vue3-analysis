@@ -32,6 +32,8 @@ function mountComponent(vnode, container, anchor) {
     isMounted: false,
     // 组件所渲染的内容，即子树（subTree）
     subTree: null,
+    // 插槽内容
+    slots,
   };
 
   // 定义 emit 函数，它接收两个参数
@@ -49,10 +51,11 @@ function mountComponent(vnode, container, anchor) {
       console.error('事件不存在');
     }
   }
+  const slots = vnode.children || {};
 
   // 将 emit 函数添加到 setupContext 中，用户可以通过 setupContext 取得 emit 函数
   // setupContext
-  const setupContext = { attrs, emit };
+  const setupContext = { attrs, emit, slots };
   // 调用 setup 函数，将只读版本的 props 作为第一个参数传递，避免用户意外地修改 props 的值
   // 将 setupContext 作为第二个参数传递
   const setupResult = setup(shallowReadonly(instance.props), setupContext);
@@ -76,7 +79,9 @@ function mountComponent(vnode, container, anchor) {
   const renderContext = new Proxy(instance, {
     get(t, k, r) {
       // 取得组件自身状态与 props 数据
-      const { state, props } = t;
+      const { state, props, slots } = t;
+      // 当 k 的值为 $slot 时，直接返回组件实例上的 slots
+      if (k === '$slot') return slots;
       // 先尝试读取自身状态数据
       if (state && k in state) {
         return state[k];

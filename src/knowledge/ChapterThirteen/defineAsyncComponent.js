@@ -111,7 +111,7 @@ function defineAsyncComponent(options) {
             props: { error: error.value },
           };
         } else if (loading.value && options.loadingComponent) {
-          // 如果异步组件正在加载，并且用户指定了 Loading 组件，则渲染 Loading 组件，则渲染
+          // 如果异步组件正在加载，并且用户指定了 Loading 组件，则渲染 Loading 组件
           return { type: options.loadingComponent };
         } else {
           return placeholder;
